@@ -51,7 +51,12 @@ function revealGroups() {
   $$('.heading-aside,.section-copy>p,.faq-aside').forEach(element => gsap.from(element, { y: 32, opacity: 0, duration: .85, scrollTrigger: { trigger: element, start: 'top 94%', once: true } }));
   ['.team-grid', '.pricing-grid', '.insight-grid'].forEach(selector => {
     const group = $(selector);
-    gsap.from([...group.children], { y: 65, rotationX: -8, opacity: 0, stagger: .1, duration: .85, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 88%', once: true } });
+    // Cards already have a CSS reveal state. Declare the end state explicitly
+    // so GSAP cannot capture an initial opacity of zero as the final value.
+    gsap.fromTo([...group.children],
+      { y: 65, rotationX: -8, opacity: 0 },
+      { y: 0, rotationX: 0, opacity: 1, clearProps: 'opacity', stagger: .1, duration: .85, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 88%', once: true } }
+    );
   });
   gsap.from('.case-card', { y: 70, rotationX: 10, scale: .96, opacity: 0, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.case-card', start: 'top 87%', once: true } });
   gsap.from('.crowd-panel', { y: 40, opacity: 0, duration: .9, scrollTrigger: { trigger: '.crowd-panel', start: 'top 90%', once: true } });
