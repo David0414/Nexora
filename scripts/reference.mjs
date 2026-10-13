@@ -1,0 +1,15 @@
+import { chromium } from 'playwright';
+import { mkdir, writeFile } from 'node:fs/promises';
+await mkdir('artifacts', { recursive: true });
+const browser = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
+await page.goto('https://joyful-studies-761814.framer.app/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+await page.keyboard.press('Escape');
+await page.waitForTimeout(4000);
+await page.screenshot({ path: 'artifacts/reference-desktop.png' });
+await writeFile('artifacts/reference-layout.json', JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('section')].map(e => ({ class: e.className, text: e.innerText.slice(0, 120), height: e.offsetHeight, bg: getComputedStyle(e).backgroundColor }))), null, 2));
+console.log(await page.locator('.rwh').evaluate(e => ({ style: e.getAttribute('style'), h1: getComputedStyle(e.querySelector('h1')).fontSize, font: getComputedStyle(e.querySelector('h1')).fontFamily })));
+await page.evaluate(() => window.scrollTo(0, window.innerHeight));
+await page.waitForTimeout(1500);
+await page.screenshot({ path: 'artifacts/reference-clients.png' });
+await browser.close();
