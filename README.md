@@ -28,8 +28,13 @@ La carpeta `dist` contiene el sitio estático completo. No necesita React, Frame
 - `index.html`: textos, estructura, enlaces y formulario.
 - `src/style.css`: estilos, colores, espaciado y diseños responsivos.
 - `src/main.js`: servicios, equipo, reseñas, artículos e interacciones.
+- `src/motion.js`: animaciones GSAP, ScrollTrigger, parallax y sección de proceso fijada durante el scroll.
+- `src/scene.js`: escena Three.js con personas instanciadas, cámara en perspectiva y anillo de búsqueda animado.
+- `src/motion.css`: profundidad, estados y adaptación de los efectos a celular.
 - `assets`: imágenes y fuentes locales.
 
 El contenido de marca, equipo, reseñas y métricas es de demostración, siguiendo la referencia. El formulario valida y guarda un brief en el navegador y permite descargarlo; no envía correos. Conectar el envío requiere configurar un destinatario y un servicio de formulario o backend.
 
 Las pruebas de navegador usan Playwright con Chrome ya instalado. `scripts/qa.mjs` comprueba las vistas de escritorio y celular y las interacciones principales.
+
+Los efectos 3D y de scroll usan GSAP y Three.js, servidos desde `assets/vendor` para funcionar sin CDN. `npm run build` actualiza estas copias desde los paquetes instalados. El scroll mantiene su comportamiento nativo; la sección del embudo se fija temporalmente únicamente en pantallas de escritorio suficientemente altas. En celular se reducen los efectos y la escena 3D se limita a 30 cuadros por segundo. Se respetan las preferencias de movimiento reducido; si WebGL no está disponible, se conserva la ilustración 2D.

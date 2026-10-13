@@ -153,6 +153,7 @@ let crowdSize = { w: 1, h: 1, dpr: 1 };
 let audienceChannel = 0;
 let crowdVisible = false;
 let crowdFrame = 0;
+let crowdIs3D = false;
 const people = Array.from({ length: 420 }, (_, i) => {
   // Deterministic distribution stays stable between redraws and resizes.
   const rand = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
@@ -160,7 +161,7 @@ const people = Array.from({ length: 420 }, (_, i) => {
 });
 function drawCrowd(time) {
   crowdFrame = 0;
-  if (!crowdVisible || document.hidden) return;
+  if (!crowdVisible || document.hidden || crowdIs3D) return;
   const { w, h } = crowdSize;
   crowdContext.clearRect(0, 0, w, h);
   const cx = w * [.5, .3, .7][audienceChannel], cy = h * .44, radius = Math.min(w * .24, 150);
@@ -186,6 +187,12 @@ new ResizeObserver(() => {
   crowdContext.setTransform(dpr, 0, 0, dpr, 0, 0); startCrowd();
 }).observe(crowdCanvas);
 new IntersectionObserver(([entry]) => { crowdVisible = entry.isIntersecting; if (crowdVisible) startCrowd(); }).observe(crowdCanvas);
+document.addEventListener('reachwise:3d-ready', () => {
+  crowdIs3D = true;
+  if (crowdFrame) cancelAnimationFrame(crowdFrame);
+  crowdFrame = 0;
+});
+document.addEventListener('reachwise:3d-unavailable', () => { crowdIs3D = false; startCrowd(); });
 $$('[data-audience]').forEach((button, index) => button.addEventListener('click', () => {
   audienceChannel = index;
   $$('[data-audience]').forEach(el => el.setAttribute('aria-selected', String(el === button)));
@@ -223,6 +230,7 @@ function selectService(index) {
   $('#service-price').textContent = service.price;
   $('#service-current').textContent = `${number} / 06 — ${service.name}`;
   $('#service-demo').innerHTML = demos[service.demo];
+  document.dispatchEvent(new CustomEvent('reachwise:service-change'));
 }
 selectService(0);
 $$('[data-service]').forEach(button => button.addEventListener('click', () => selectService(Number(button.dataset.service))));
@@ -414,3 +422,9 @@ function updateClock() {
 }
 updateClock();
 setInterval(() => { if (!document.hidden) updateClock(); }, 1000);
+
+// Enhance the working static page after its controls and content are ready.
+import('./motion.js').then(({ initMotion }) => initMotion()).catch(error => {
+  document.documentElement.dataset.motion = 'fallback';
+  console.warn('Motion enhancement could not start; the page remains usable.', error);
+});

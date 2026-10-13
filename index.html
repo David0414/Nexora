@@ -10,6 +10,9 @@
   <link rel="preload" href="assets/crowd.webp" as="image">
   <link rel="stylesheet" href="src/fonts.css">
   <link rel="stylesheet" href="src/style.css">
+  <link rel="stylesheet" href="src/motion.css">
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
   <script src="src/main.js" type="module"></script>
 </head>
 <body>
@@ -44,14 +47,14 @@
     <section class="clients section" id="clients">
       <div class="wrap clients-layout">
         <div class="section-copy reveal"><span class="eyebrow">(00) Clients</span><h2>140+ brands<br><mark>on</mark> <mark>our radar.</mark></h2><p>Local clinics, cafés and online shops to national brands. Every one of them came to us to be found by more of the right people.</p><div class="client-proof mono"><span>★★★★★ 4.9 · 126 REVIEWS</span><span><i class="live-dot"></i> LAST PING <b id="last-ping">Northside Dental · +212%</b></span></div></div>
-        <div class="radar" aria-label="Interactive radar showing example client results"><span class="bearing north mono">000°</span><span class="bearing east mono">090°</span><span class="bearing south mono">180°</span><span class="bearing west mono">270°</span><div class="radar-disc"><div class="radar-sweep"></div><div class="radar-ring ring-1"></div><div class="radar-ring ring-2"></div><div class="radar-ring ring-3"></div><span class="radar-level level-1 mono">LOCAL</span><span class="radar-level level-2 mono">REGIONAL</span><span class="radar-level level-3 mono">NATIONAL</span><span class="radar-level level-4 mono">GLOBAL</span><i class="radar-center"></i><div id="radar-clients"></div></div></div>
+        <div class="radar" aria-label="Interactive radar showing example client results"><span class="bearing north mono">000°</span><span class="bearing east mono">090°</span><span class="bearing south mono">180°</span><span class="bearing west mono">270°</span><div class="radar-disc"><div class="radar-sweep-mask"><div class="radar-sweep"></div></div><div class="radar-ring ring-1"></div><div class="radar-ring ring-2"></div><div class="radar-ring ring-3"></div><span class="radar-level level-1 mono">LOCAL</span><span class="radar-level level-2 mono">REGIONAL</span><span class="radar-level level-3 mono">NATIONAL</span><span class="radar-level level-4 mono">GLOBAL</span><i class="radar-center"></i><div id="radar-clients"></div></div></div>
       </div>
     </section>
 
     <section class="section about" id="about">
       <div class="wrap">
         <div class="section-heading reveal"><div><span class="eyebrow">(01) Why Reachwise</span><h2>Everyone is a crowd.<br>We find <mark>your</mark> <mark>buyers.</mark></h2></div><div class="heading-aside"><p>Most brands aren't invisible. They're talking to the wrong people. We find the searches, feeds and audiences where your buyers already are — and put you there.</p><a class="button button-outline" href="#team">About us <span class="button-icon">↗</span></a><div class="tiny-facts mono"><span>Founded 2016</span><span>38 people</span><span>New York + remote</span></div></div></div>
-        <div class="crowd-panel reveal"><canvas id="crowd-canvas" aria-hidden="true"></canvas><div class="crowd-label mono"><b>1,200</b> people in the crowd</div><div class="crowd-buyer mono">1 in <b>12</b> is your buyer</div><div class="audience-tabs" role="tablist" aria-label="Audience channel"><button role="tab" aria-selected="true" data-audience="search"><span>Search</span><b>312</b><small>searching “dentist near me”</small></button><button role="tab" aria-selected="false" data-audience="feeds"><span>Feeds</span><b>1,204</b><small>following #coffee</small></button><button role="tab" aria-selected="false" data-audience="audiences"><span>Audiences</span><b>88</b><small>lookalikes</small></button></div></div>
+        <div class="crowd-panel reveal"><canvas id="crowd-canvas" aria-hidden="true"></canvas><div id="audience-3d" aria-hidden="true"></div><div class="crowd-label mono"><b>1,200</b> people in the crowd</div><div class="crowd-buyer mono">1 in <b>12</b> is your buyer</div><span class="scene-hint mono" aria-hidden="true">Move to explore ↗</span><div class="audience-tabs" role="tablist" aria-label="Audience channel"><button role="tab" aria-selected="true" data-audience="search"><span>Search</span><b>312</b><small>searching “dentist near me”</small></button><button role="tab" aria-selected="false" data-audience="feeds"><span>Feeds</span><b>1,204</b><small>following #coffee</small></button><button role="tab" aria-selected="false" data-audience="audiences"><span>Audiences</span><b>88</b><small>lookalikes</small></button></div></div>
       </div>
     </section>
 

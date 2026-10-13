@@ -1,0 +1,57 @@
+/* Progressive enhancement: the base layout also works without the motion engine. */
+.motion-ready .reveal{opacity:1;translate:none;transition:none}
+.motion-ready .hero{perspective:1500px}
+.motion-ready .hero-content{transform-style:preserve-3d;will-change:transform}
+.motion-ready .hero h1{perspective:1000px}
+.motion-word-mask{display:inline-block;overflow:clip;vertical-align:top;padding-bottom:.14em;margin-bottom:-.14em;perspective:900px}
+.motion-word{display:inline-block;transform-origin:50% 100%;will-change:transform}
+.motion-ready .hero h1 mark{margin-top:.12em}
+.motion-ready .hero-content h1{pointer-events:none}
+.motion-ready h2{perspective:1000px;transform-origin:50% 85%}
+.motion-ready .hero-photo,.motion-ready #hero-canvas{transform-origin:50% 35%;will-change:transform}
+.scroll-progress{position:fixed;left:0;top:0;width:100%;height:3px;z-index:80;background:var(--lime);transform:scaleX(0);transform-origin:left;pointer-events:none}
+.scroll-cue{position:absolute;left:50%;bottom:119px;translate:-50% 0;display:flex;align-items:center;gap:10px;color:#fff9;font:9px var(--mono);text-transform:uppercase;letter-spacing:.13em;pointer-events:none}
+.scroll-cue i{display:inline-block;width:16px;height:24px;border:1px solid #ffffff60;border-radius:10px;position:relative}
+.scroll-cue i:after{content:'';position:absolute;top:4px;left:6px;width:2px;height:5px;background:var(--lime);border-radius:2px;animation:scroll-cue 1.8s ease-in-out infinite}
+.motion-ready .radar{perspective:1200px;transform-style:preserve-3d}
+.motion-ready .radar-disc{transform-style:preserve-3d;will-change:transform;box-shadow:0 20px 50px #0d0e1008}
+.radar-sweep-mask{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none}
+.motion-ready .radar-client{transform:translate(-50%,-50%) translateZ(24px)}
+.motion-ready .radar-client b{box-shadow:0 0 0 2px var(--bone),0 7px 12px #0d0e1014}
+.motion-ready .service-panel,.motion-ready .case-card{perspective:1600px}
+.motion-ready .service-demo,.motion-ready .service-detail{transform-style:preserve-3d;transform-origin:50% 50%}
+.motion-ready .service-demo>div{will-change:transform}
+.motion-ready .demo-badge{transform:translateZ(45px)}
+.motion-ready .team-image,.motion-ready .insight-image{perspective:1000px}
+.motion-ready .team-image img,.motion-ready .insight-image img{will-change:transform}
+.motion-tilt{position:relative;transform-style:preserve-3d;will-change:transform;--glare-x:50%;--glare-y:50%}
+.motion-tilt:after{content:'';position:absolute;inset:0;border-radius:inherit;background:radial-gradient(circle at var(--glare-x) var(--glare-y),#ffffff25,transparent 55%);opacity:0;pointer-events:none;transition:opacity .3s;z-index:4}
+.motion-tilt:hover:after{opacity:1}
+.motion-ready .social-post{transition:none;transform-style:preserve-3d}
+.motion-ready .post-copy{transform:translateZ(40px)}
+.motion-ready .post-header,.motion-ready .like-button{transform:translateZ(24px)}
+.motion-ready .report{perspective:1600px;transform-style:preserve-3d;will-change:transform}
+.motion-ready .report-metrics{transform:translateZ(28px)}
+.motion-ready .review-phone{will-change:transform}
+.motion-ready .footer-wordmark{transform-origin:50% 100%;will-change:transform}
+.motion-ready .content,.motion-ready .team,.motion-ready .insights,.motion-ready .reviews{overflow:clip}
+/* The 3D audience occupies the same footprint as its 2D fallback. */
+#audience-3d{position:absolute;inset:0;opacity:0;transition:opacity .8s;pointer-events:none}
+#audience-3d canvas{display:block;width:100%;height:100%;outline:none}
+.crowd-panel.scene-ready #audience-3d{opacity:1}
+.crowd-panel.scene-ready #crowd-canvas{opacity:0}
+.crowd-panel .crowd-label,.crowd-panel .crowd-buyer,.crowd-panel .audience-tabs{z-index:2}
+.scene-hint{position:absolute;bottom:135px;right:25px;z-index:2;font-size:9px;opacity:0;pointer-events:none;transition:opacity .5s}
+.scene-ready .scene-hint{opacity:.55}
+.motion-process .process-layout{perspective:1300px}
+.motion-process .funnel{transform-style:preserve-3d;transform-origin:center}
+.motion-process .funnel-tier{transform-style:preserve-3d;will-change:transform}
+.process-scroll-note{display:flex;align-items:center;justify-content:space-between;margin-top:25px;color:var(--stone);font:9px var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.process-scroll-note>span:last-child{display:flex;gap:7px;align-items:center}
+.process-progress-track{display:block;width:80px;height:2px;overflow:hidden;background:#0d0e1020}
+.process-progress-track i{display:block;height:100%;background:var(--ink);transform:scaleX(0);transform-origin:left}
+@keyframes scroll-cue{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(7px);opacity:1}}
+@media(min-width:1000px) and (min-height:740px){.motion-process .section-heading{margin-bottom:30px}.motion-process .process-step{padding:20px 16px}.motion-process .process-step small{font-size:13px}.motion-process .funnel-tier{padding-top:20px;padding-bottom:20px}}
+@media(max-width:1200px){.scroll-cue{bottom:164px}}
+@media(max-width:680px){.scroll-cue{bottom:171px;font-size:7px}.scroll-cue i{height:20px;width:13px}.scroll-cue i:after{left:5px}.motion-word-mask{padding-bottom:.1em;margin-bottom:-.1em}.scene-hint{display:none}.process-scroll-note{display:none}.motion-tilt{will-change:auto}}
+@media(prefers-reduced-motion:reduce){.scroll-progress,.scroll-cue,.scene-hint,.process-scroll-note{display:none}.motion-ready .reveal{opacity:1;translate:none}.motion-word{will-change:auto}}
