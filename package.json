@@ -7,9 +7,10 @@
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node --check src/main.js && node --check src/motion.js && node --check src/scene.js",
+    "check": "node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
     "test": "node scripts/qa.mjs",
-    "test:motion": "node scripts/qa-motion.mjs"
+    "test:motion": "node scripts/qa-motion.mjs",
+    "test:premium": "node scripts/qa-premium.mjs"
   },
   "devDependencies": {
     "playwright": "^1.58.0"

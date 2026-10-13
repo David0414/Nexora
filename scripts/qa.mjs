@@ -49,7 +49,13 @@ await page.locator('[data-open="seo-article"]').click();
 assert.equal(await page.locator('#detail-dialog').isVisible(), true);
 assert.match(await page.locator('#dialog-title').textContent(), /Local SEO/);
 await page.keyboard.press('Escape');
+await page.locator('#detail-dialog').waitFor({ state: 'hidden' });
 assert.equal(await page.locator('#detail-dialog').isVisible(), false);
+await page.evaluate(() => {
+  const pin = window.ScrollTrigger?.getById('gallery-pin');
+  if (pin) window.scrollTo({ top: pin.start + 5, behavior: 'instant' });
+});
+await page.waitForTimeout(1000);
 const like = page.locator('.like-button').first();
 await like.click();
 assert.equal(await like.getAttribute('aria-pressed'), 'true');

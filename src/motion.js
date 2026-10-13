@@ -1,6 +1,7 @@
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const { gsap, ScrollTrigger } = window;
+import { initPremium } from './premium.js';
 
 function heroWords() {
   const heading = $('#hero-title');
@@ -156,10 +157,7 @@ export function initMotion() {
   });
   gsap.fromTo('.footer-wordmark', { y: 75, rotationX: 35, opacity: .15 }, { y: 0, rotationX: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: '.footer', start: 'top 90%', end: 'bottom bottom', scrub: 1 } });
 
-  document.addEventListener('reachwise:service-change', () => {
-    gsap.fromTo('.service-demo>div', { rotationY: -13, y: 24, scale: .96, autoAlpha: .2 }, { rotationY: 0, y: 0, scale: 1, autoAlpha: 1, duration: .65, overwrite: true });
-    gsap.fromTo('.service-detail h3,.service-detail>p,.included,.service-bottom', { y: 13, autoAlpha: .4 }, { y: 0, autoAlpha: 1, duration: .45, stagger: .035, overwrite: true });
-  });
+  initPremium({ gsap, ScrollTrigger, media });
 
   // WebGL is optional. Low-power/mobile devices and unsupported browsers keep the 2D scene.
   import('./scene.js').then(({ createAudienceScene }) => {

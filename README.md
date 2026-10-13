@@ -31,6 +31,7 @@ La carpeta `dist` contiene el sitio estático completo. No necesita React, Frame
 - `src/motion.js`: animaciones GSAP, ScrollTrigger, parallax y sección de proceso fijada durante el scroll.
 - `src/scene.js`: escena Three.js con personas instanciadas, cámara en perspectiva y anillo de búsqueda animado.
 - `src/motion.css`: profundidad, estados y adaptación de los efectos a celular.
+- `src/premium.js` y `src/premium.css`: transiciones completas entre servicios, menú a pantalla completa, galería horizontal, cursor contextual, navegación entre capítulos, gráficos explorables, acordeones y diálogos animados.
 - `assets`: imágenes y fuentes locales.
 
 El contenido de marca, equipo, reseñas y métricas es de demostración, siguiendo la referencia. El formulario valida y guarda un brief en el navegador y permite descargarlo; no envía correos. Conectar el envío requiere configurar un destinatario y un servicio de formulario o backend.
@@ -38,3 +39,5 @@ El contenido de marca, equipo, reseñas y métricas es de demostración, siguien
 Las pruebas de navegador usan Playwright con Chrome ya instalado. `scripts/qa.mjs` comprueba las vistas de escritorio y celular y las interacciones principales.
 
 Los efectos 3D y de scroll usan GSAP y Three.js, servidos desde `assets/vendor` para funcionar sin CDN. `npm run build` actualiza estas copias desde los paquetes instalados. El scroll mantiene su comportamiento nativo; la sección del embudo se fija temporalmente únicamente en pantallas de escritorio suficientemente altas. En celular se reducen los efectos y la escena 3D se limita a 30 cuadros por segundo. Se respetan las preferencias de movimiento reducido; si WebGL no está disponible, se conserva la ilustración 2D.
+
+La escena de audiencia permite transformar la multitud en un globo 3D y volver. La galería incorpora seis piezas, navegación con flechas y arrastre, y en escritorio acompaña el scroll vertical. En celular se navega con deslizamiento horizontal nativo. El menú «Explore» se abre desde el botón adicional de la portada en escritorio. Las gráficas muestran datos ilustrativos al pasar el cursor. `npm run test:premium` valida estas interacciones, las transiciones y los tamaños de pantalla.

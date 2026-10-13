@@ -36,9 +36,11 @@ const revealObserver = new IntersectionObserver(entries => {
 function observeReveals() { $$('.reveal:not(.is-visible)').forEach(el => revealObserver.observe(el)); }
 observeReveals();
 const counter = $('[data-count]');
+let counterAnimating = !reducedMotion;
 if (!reducedMotion) {
   const start = performance.now() + 1250;
   function count(now) {
+    if (!counterAnimating) return;
     const t = Math.min(1, Math.max(0, (now - start) / 1800));
     counter.textContent = formatNumber(Number(counter.dataset.count) * (1 - Math.pow(1 - t, 4)));
     if (t < 1) requestAnimationFrame(count);
@@ -124,7 +126,9 @@ hero.addEventListener('pointerleave', () => { pointer = { x: .78, y: .75 }; });
 hero.addEventListener('click', event => {
   if (event.target.closest('a,button,nav')) return;
   campaignPulse = performance.now();
-  counter.textContent = formatNumber(Number(counter.dataset.count) + 312);
+  counterAnimating = false;
+  const previousCount = Math.max(Number(counter.dataset.count), Number(counter.textContent.replaceAll(',', '')) || 0);
+  counter.textContent = formatNumber(previousCount + 312);
   startHero();
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { startHero(); startCrowd(); } });
@@ -218,6 +222,8 @@ const demos = {
 };
 let activeService = 0;
 function selectService(index) {
+  const nextIndex = (index + services.length) % services.length;
+  document.dispatchEvent(new CustomEvent('reachwise:service-before', { detail: { index: nextIndex, direction: nextIndex >= activeService ? 1 : -1 } }));
   activeService = (index + services.length) % services.length;
   const service = services[activeService], number = String(activeService + 1).padStart(2, '0');
   $$('[data-service]').forEach((button, i) => { button.setAttribute('aria-selected', String(i === activeService)); button.tabIndex = i === activeService ? 0 : -1; });
@@ -230,7 +236,7 @@ function selectService(index) {
   $('#service-price').textContent = service.price;
   $('#service-current').textContent = `${number} / 06 — ${service.name}`;
   $('#service-demo').innerHTML = demos[service.demo];
-  document.dispatchEvent(new CustomEvent('reachwise:service-change'));
+  document.dispatchEvent(new CustomEvent('reachwise:service-change', { detail: { index: activeService } }));
 }
 selectService(0);
 $$('[data-service]').forEach(button => button.addEventListener('click', () => selectService(Number(button.dataset.service))));
@@ -358,6 +364,7 @@ const articles = {
 const dialog = $('#detail-dialog');
 const dialogContent = $('#dialog-content');
 function openDetail(key) {
+  const wasOpen = dialog.open;
   if (key === 'dental') {
     dialogContent.innerHTML = `<span class="dialog-kicker">EXAMPLE CASE STUDY / SEO / 2025</span><h2 id="dialog-title">From page 4 to the top 3.</h2><p>Northside Dental is the local SEO example used in this design preview. The campaign brings together location pages, useful treatment information and a consistent review process.</p><h3>The starting point</h3><p>4,200 organic visits a month, with important treatment searches landing outside the first page.</p><h3>The plan</h3><p>Audit technical issues, improve location pages, answer common treatment questions and make booking the next obvious step. The example includes 60 location pages and 180 reviews.</p><h3>The result</h3><p>The reference illustrates 38,900 organic visits a month: an increase of 826%. All figures here are presentation examples.</p><div class="dialog-actions"><a class="button button-ink" href="#contact" data-close-dialog>Talk about your brand <span class="button-icon">↗</span></a></div>`;
   } else if (key === 'cases') {
@@ -371,14 +378,20 @@ function openDetail(key) {
   if (!dialog.open) dialog.showModal();
   dialog.scrollTop = 0;
   document.body.style.overflow = 'hidden';
+  document.dispatchEvent(new CustomEvent('reachwise:dialog-open', { detail: { wasOpen } }));
+}
+function closeDetail() {
+  const request = new CustomEvent('reachwise:dialog-close', { cancelable: true });
+  if (document.dispatchEvent(request)) dialog.close();
 }
 $$('[data-open]').forEach(button => button.addEventListener('click', () => openDetail(button.dataset.open)));
-$('.dialog-close').addEventListener('click', () => dialog.close());
+$('.dialog-close').addEventListener('click', closeDetail);
+dialog.addEventListener('cancel', event => { event.preventDefault(); closeDetail(); });
 dialog.addEventListener('close', () => { document.body.style.overflow = ''; });
 dialog.addEventListener('click', event => {
   if (event.target === dialog) {
     const rect = dialog.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
+    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeDetail();
   }
   const articleButton = event.target.closest('[data-dialog-article]');
   if (articleButton) openDetail(articleButton.dataset.dialogArticle);
@@ -391,7 +404,7 @@ dialog.addEventListener('click', event => {
       dialog.scrollTop = 0;
     }
   }
-  if (event.target.closest('[data-close-dialog]')) dialog.close();
+  if (event.target.closest('[data-close-dialog]')) closeDetail();
 });
 
 // The preview saves briefs locally and never claims to send an unconfigured email.
