@@ -1,4 +1,4 @@
-{
+﻿{
   "name": "reachwise-web",
   "version": "1.0.0",
   "private": true,
@@ -7,10 +7,10 @@
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
+    "check": "node --check src/nexora-new.js && node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
     "test": "node scripts/qa.mjs",
-    "test:motion": "node scripts/qa-motion.mjs",
-    "test:premium": "node scripts/qa-premium.mjs"
+    "test:motion": "node scripts/qa.mjs",
+    "test:premium": "node scripts/qa.mjs"
   },
   "devDependencies": {
     "playwright": "^1.58.0"
@@ -20,3 +20,5 @@
     "three": "^0.186.1"
   }
 }
+
+

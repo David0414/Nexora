@@ -3,3 +3,6 @@ dist/
 .cache/
 artifacts/
 *.tar.gz
+.env
+.env.*
+!.env.example

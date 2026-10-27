@@ -41,26 +41,31 @@ function tilt(element, amount = 8, restingZ = 0) {
 }
 
 function revealGroups() {
+  const reversible = (trigger, start) => ({ trigger, start, toggleActions: 'play reverse play reverse' });
   // Animate individual headings and blocks rather than hiding entire sections.
   $$('.section h2').forEach(heading => {
-    gsap.from(heading, { y: 48, rotationX: -23, opacity: 0, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: heading, start: 'top 91%', once: true } });
+    gsap.from(heading, { y: 48, rotationX: -23, opacity: 0, duration: 1.1, ease: 'power3.out', scrollTrigger: reversible(heading, 'top 91%') });
     const marks = [...heading.querySelectorAll('mark')];
-    if (marks.length) gsap.from(marks, { clipPath: 'inset(0 100% 0 0)', duration: .9, delay: .2, stagger: .1, ease: 'power3.inOut', scrollTrigger: { trigger: heading, start: 'top 90%', once: true } });
+    if (marks.length) gsap.from(marks, { clipPath: 'inset(0 100% 0 0)', duration: .9, delay: .2, stagger: .1, ease: 'power3.inOut', scrollTrigger: reversible(heading, 'top 90%') });
   });
-  $$('.eyebrow').forEach(label => gsap.from(label, { x: -20, opacity: 0, duration: .65, ease: 'power2.out', scrollTrigger: { trigger: label, start: 'top 93%', once: true } }));
-  $$('.heading-aside,.section-copy>p,.faq-aside').forEach(element => gsap.from(element, { y: 32, opacity: 0, duration: .85, scrollTrigger: { trigger: element, start: 'top 94%', once: true } }));
+  $$('.eyebrow').forEach(label => gsap.from(label, { x: -20, opacity: 0, duration: .65, ease: 'power2.out', scrollTrigger: reversible(label, 'top 93%') }));
+  $$('.heading-aside,.section-copy>p,.faq-aside').forEach(element => gsap.from(element, { y: 32, opacity: 0, duration: .85, scrollTrigger: reversible(element, 'top 94%') }));
+  gsap.from('.social-grid', { y: 38, rotationX: 5, scale: .985, opacity: 0, duration: 1, ease: 'power3.out', scrollTrigger: reversible('.social-grid', 'top 88%') });
+  gsap.from('.reviews-layout>.reveal', { y: 34, rotationX: -6, opacity: 0, duration: .9, scrollTrigger: reversible('.reviews-layout>.reveal', 'top 88%') });
+  gsap.from('.team-foot', { y: 24, opacity: 0, duration: .75, scrollTrigger: reversible('.team-foot', 'top 93%') });
+  gsap.from('.faq-list', { y: 26, rotationY: 2, opacity: 0, duration: .85, scrollTrigger: reversible('.faq-list', 'top 90%') });
   ['.team-grid', '.pricing-grid', '.insight-grid'].forEach(selector => {
     const group = $(selector);
-    // Cards already have a CSS reveal state. Declare the end state explicitly
-    // so GSAP cannot capture an initial opacity of zero as the final value.
+    // Each card returns to its starting pose when it leaves, then unfolds again
+    // on the way back up. Keeping the end opacity lets the reverse play cleanly.
     gsap.fromTo([...group.children],
       { y: 65, rotationX: -8, opacity: 0 },
-      { y: 0, rotationX: 0, opacity: 1, clearProps: 'opacity', stagger: .1, duration: .85, ease: 'power3.out', scrollTrigger: { trigger: group, start: 'top 88%', once: true } }
+      { y: 0, rotationX: 0, opacity: 1, stagger: .1, duration: .85, ease: 'power3.out', scrollTrigger: reversible(group, 'top 88%') }
     );
   });
-  gsap.from('.case-card', { y: 70, rotationX: 10, scale: .96, opacity: 0, duration: 1.15, ease: 'power3.out', scrollTrigger: { trigger: '.case-card', start: 'top 87%', once: true } });
-  gsap.from('.crowd-panel', { y: 40, opacity: 0, duration: .9, scrollTrigger: { trigger: '.crowd-panel', start: 'top 90%', once: true } });
-  gsap.from('.contact-layout>div,.contact-aside', { y: 40, opacity: 0, duration: .9, stagger: .16, scrollTrigger: { trigger: '#contact', start: 'top 80%', once: true } });
+  gsap.from('.case-card', { y: 70, rotationX: 10, scale: .96, opacity: 0, duration: 1.15, ease: 'power3.out', scrollTrigger: reversible('.case-card', 'top 87%') });
+  gsap.from('.crowd-panel', { y: 40, opacity: 0, duration: .9, scrollTrigger: reversible('.crowd-panel', 'top 90%') });
+  gsap.from('.contact-layout>div,.contact-aside', { y: 40, opacity: 0, duration: .9, stagger: .16, scrollTrigger: reversible('#contact', 'top 80%') });
 }
 
 function pinnedFunnel() {
@@ -147,6 +152,14 @@ export function initMotion() {
       gsap.fromTo(post, { y: index % 2 ? 70 : -35, rotationZ: index % 2 ? -9 : 8, rotationY: index % 2 ? -12 : 12 }, { y: index % 2 ? -35 : 40, rotationZ: index % 2 ? 3 : -3, rotationY: 0, ease: 'none', scrollTrigger: { trigger: '.social-grid', start: 'top bottom', end: 'bottom top', scrub: 1 } });
     });
     $$('.team-image img,.insight-image img').forEach(image => gsap.fromTo(image, { scale: 1.16, yPercent: -5 }, { scale: 1.02, yPercent: 5, ease: 'none', scrollTrigger: { trigger: image.parentElement, start: 'top bottom', end: 'bottom top', scrub: 1 } }));
+  });
+  media.add('(max-width: 680px)', () => {
+    // Lighter touch-sized 3D parallax keeps the same motion going on phones
+    // without hover effects, pinned sections, or expensive full-screen layers.
+    gsap.fromTo('.radar-disc', { y: 22, rotationZ: -3, scale: .96 }, { y: 0, rotationZ: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: '.clients', start: 'top bottom', end: 'center center', scrub: .8 } });
+    gsap.fromTo('.report', { rotationX: 6, y: 24, scale: .985 }, { rotationX: 0, y: 0, scale: 1, ease: 'none', scrollTrigger: { trigger: '.report', start: 'top 95%', end: 'top 22%', scrub: .8 } });
+    gsap.fromTo('.review-phone', { rotationY: -5, rotationZ: 1, y: 24 }, { rotationY: 0, rotationZ: 3, y: -12, ease: 'none', scrollTrigger: { trigger: '.reviews', start: 'top bottom', end: 'bottom top', scrub: .8 } });
+    $$('.team-image img,.insight-image img').forEach(image => gsap.fromTo(image, { scale: 1.08, yPercent: -3 }, { scale: 1.025, yPercent: 3, ease: 'none', scrollTrigger: { trigger: image.parentElement, start: 'top bottom', end: 'bottom top', scrub: .8 } }));
   });
   media.add('(hover: hover) and (pointer: fine)', () => {
     $$('.price-card').forEach(card => tilt(card, 10));

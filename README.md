@@ -14,6 +14,8 @@ npm run dev
 
 Abre http://localhost:5173. También puedes ejecutar `node scripts/serve.mjs` sin instalar paquetes.
 
+Para verlo en un celular, conecta ambos dispositivos a la misma red Wi-Fi. Reinicia `npm start` y abre en el celular la dirección que la terminal muestra como `Celular / misma red Wi-Fi`. Mantén encendida la computadora y abierta la terminal. Puedes limitar el servidor a esta computadora con la variable `HOST=127.0.0.1`.
+
 ## Compilar
 
 ```powershell

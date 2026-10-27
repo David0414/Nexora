@@ -1,0 +1,1 @@
+.crowd-panel:has(#audience-3d[data-state="fallback"]) #crowd-canvas{opacity:1!important}.crowd-panel:has(#audience-3d[data-state="fallback"]) #audience-3d{display:none}

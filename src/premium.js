@@ -77,7 +77,11 @@ function interactiveReport(gsap, ScrollTrigger) {
   const samples = { overview: [1.1, 1.4, 1.8, 2.1, 2.4, 2.8, 3.1, 3.3, 3.8, 4.1, 4.5, 5.6], seo: [82, 88, 96, 111, 124, 140, 156, 171, 184, 195, 208, 212], social: [.3, .6, .8, 1.1, 1.4, 1.8, 2.2, 2.5, 2.8, 3.2, 3.7, 4.1], ads: [2.1, 2.3, 2.8, 3.1, 3.4, 3.7, 4.2, 4.5, 4.8, 5.2, 5.8, 6.2] };
   let active = 'overview';
   function trace() { const length = line.getTotalLength(); gsap.fromTo(line, { strokeDasharray: length, strokeDashoffset: length }, { strokeDashoffset: 0, duration: 1.1, ease: 'power2.inOut', overwrite: true }); }
-  ScrollTrigger.create({ trigger: chart, start: 'top 90%', once: true, onEnter: trace });
+  const lineLength = line.getTotalLength();
+  gsap.fromTo(line, { strokeDasharray: lineLength, strokeDashoffset: lineLength }, {
+    strokeDasharray: lineLength, strokeDashoffset: 0, ease: 'none',
+    scrollTrigger: { trigger: chart, start: 'top 88%', end: 'top 35%', scrub: .8 }
+  });
   $$('[data-report]').forEach(button => button.addEventListener('click', () => { active = button.dataset.report; trace(); gsap.fromTo('.report-metrics b', { y: 12, opacity: .3 }, { y: 0, opacity: 1, duration: .55, stagger: .06, overwrite: true }); }));
   function explore(event) {
     const rect = chart.getBoundingClientRect(), parent = report.getBoundingClientRect();
