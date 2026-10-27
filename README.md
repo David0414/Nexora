@@ -1,8 +1,21 @@
-# Reachwise
+# Nexora
 
-Sitio web basado en la referencia visual https://joyful-studies-761814.framer.app/.
+Sitio de Nexora, consultoría de software, plataformas, automatización industrial y hardware.
 
-Incluye una portada con fotografía y círculo interactivo, radar de clientes animado, visualización de audiencias, seis servicios, comparativa de resultados, proceso, informe interactivo, contenido social, equipo, reseñas, precios, FAQ, artículos y formulario.
+La página principal está en `index.html` y usa `src/nexora-new.css` y `src/nexora-new.js`. La carpeta `portfolio-main/portfolio-main` contiene un proyecto distinto: el portafolio personal de David.
+
+## Publicar Nexora en Vercel
+
+Importa el repositorio `David0414/Nexora` y selecciona la raíz del repositorio en **Root Directory** (dejar vacío; la interfaz puede mostrar `./`). No selecciones `portfolio-main/portfolio-main`.
+
+El archivo `vercel.json` configura:
+
+- **Framework Preset:** Other.
+- **Install Command:** `npm ci`.
+- **Build Command:** `npm run build`.
+- **Output Directory:** `dist`.
+
+Si un despliegue existente muestra el portafolio de David, cambia **Settings → Build and Deployment → Root Directory** a la raíz del repositorio, guarda y vuelve a desplegar la rama `main`. Vercel lee `vercel.json` desde la carpeta elegida, así que este ajuste también debe ser correcto en el panel.
 
 ## Abrir localmente
 
