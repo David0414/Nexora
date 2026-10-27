@@ -9,11 +9,12 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <script type="importmap">{"imports":{"three":"./assets/vendor/three.module.js"}}</script>
   <link rel="stylesheet" href="src/nexora-new.css">
+  <link rel="stylesheet" href="src/nexora-core.css">
   <script type="module" src="src/nexora-new.js"></script>
 </head>
 <body>
   <div class="intro-screen" id="intro-screen" role="dialog" aria-label="Entrada a Nexora">
-    <canvas id="intro-scene" aria-hidden="true"></canvas>
+    <div class="intro-core-orbit" aria-hidden="true"></div>
     <div class="intro-grid" aria-hidden="true"></div>
     <div class="intro-topline"><span class="status-dot"></span><span>NEXORA / SYSTEMS STUDIO</span><span>01—04</span></div>
     <div class="intro-center">
@@ -53,8 +54,18 @@
         </div>
         <div class="hero-note reveal"><span class="hero-note-line"></span><span>Diseñamos, implementamos y dejamos sistemas que tu equipo puede operar.</span></div>
       </div>
-      <div class="hero-stage reveal" aria-label="Escena 3D interactiva de Nexora">
-        <canvas id="hero-scene"></canvas>
+      <div class="hero-stage reveal" role="group" aria-label="Núcleo tecnológico interactivo de Nexora">
+        <div class="core-caption"><span class="status-dot"></span> NEXORA / CORE <span>NX—01</span></div>
+        <canvas id="hero-scene" role="img" aria-label="Núcleo flotante con ocho piezas metálicas, centro luminoso y aros orbitales"></canvas>
+        <div class="core-callout core-callout-top" aria-hidden="true"><i></i><span>SOFTWARE<br><b>+ INTELIGENCIA</b></span></div>
+        <div class="core-callout core-callout-bottom" aria-hidden="true"><i></i><span>HARDWARE<br><b>+ CONEXIÓN</b></span></div>
+        <div class="core-controls">
+          <p data-core-hint>MUEVE EL CURSOR PARA EXPLORAR</p>
+          <div class="core-control-buttons">
+            <button class="core-toggle" type="button" data-core-toggle aria-pressed="false" aria-controls="hero-scene"><span class="core-toggle-icon" aria-hidden="true">⊕</span><span data-core-label>Explorar núcleo</span><span aria-hidden="true">↗</span></button>
+            <button class="core-pause" type="button" data-core-pause aria-pressed="false" aria-controls="hero-scene"><span data-pause-label>Pausar</span></button>
+          </div>
+        </div>
       </div>
       <div class="hero-footer reveal">
         <div><span class="micro-label">PLATAFORMAS DIGITALES</span><strong>Web <span>+</span> Ops</strong><small>portales, dashboards y software operativo</small></div>
@@ -87,7 +98,11 @@
     </section>
 
     <section class="section method-section" id="metodo">
-      <div class="method-visual reveal" aria-label="Robot 3D que representa los pasos de implementación de software y control industrial"><canvas id="method-scene"></canvas><div class="method-hud method-hud-top"><span class="status-dot"></span> NEXORA / IMPLEMENTATION CORE <b>ONLINE</b></div><div class="method-hud method-hud-bottom"><span>NX·03</span><p>SOFTWARE +<br><strong>CONTROL FÍSICO</strong></p></div><div class="method-chip method-chip-plc"><i></i><span>PLC LINK</span><b>READY</b></div><div class="method-chip method-chip-api"><i></i><span>API SYNC</span><b>24ms</b></div><p class="orbit-copy orbit-copy-one">ALINEAR</p><p class="orbit-copy orbit-copy-two">DISEÑAR</p><p class="orbit-copy orbit-copy-three">IMPLEMENTAR</p><p class="orbit-copy orbit-copy-four">EVOLUCIONAR</p></div>
+      <div class="method-visual reveal" role="img" aria-label="Las piezas del núcleo Nexora se separan y vuelven a ensamblarse a medida que avanzan los pasos de implementación">
+        <canvas id="method-scene" aria-hidden="true"></canvas>
+        <div class="method-hud method-hud-top"><span class="status-dot"></span> DE LA IDEA AL SISTEMA</div>
+        <div class="method-hud method-hud-bottom"><span data-core-phase>01 / ALINEAR</span><p>CADA PARTE.<br><strong>UN MISMO PROPÓSITO.</strong></p></div>
+      </div>
       <div class="method-content"><p class="eyebrow reveal">03 / CÓMO IMPLEMENTAMOS</p><h2 class="reveal">Pasos para una<br><em>implementación sólida.</em></h2><p class="method-lede reveal">Alineamos objetivos, construimos por etapas y acompañamos la operación hasta que el sistema queda listo para crecer.</p><div class="method-steps"><div class="method-step reveal"><span>01</span><div><h3>Alinear objetivos</h3><p>Definimos alcance, indicadores y responsables antes de construir.</p></div><b>↗</b></div><div class="method-step reveal"><span>02</span><div><h3>Diseñar la solución</h3><p>Traducimos el proceso a arquitectura, flujos, hardware y una hoja de ruta clara.</p></div><b>↗</b></div><div class="method-step reveal"><span>03</span><div><h3>Implementar y probar</h3><p>Construimos por etapas, probamos con usuarios y validamos en campo.</p></div><b>↗</b></div><div class="method-step reveal"><span>04</span><div><h3>Acompañar la evolución</h3><p>Medimos, documentamos y ajustamos para que el sistema siga creciendo.</p></div><b>↗</b></div></div></div>
     </section>
 

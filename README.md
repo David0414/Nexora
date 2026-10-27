@@ -4,6 +4,8 @@ Sitio de Nexora, consultoría de software, plataformas, automatización industri
 
 La página principal está en `index.html` y usa `src/nexora-new.css` y `src/nexora-new.js`. La carpeta `portfolio-main/portfolio-main` contiene un proyecto distinto: el portafolio personal de David.
 
+El núcleo 3D de Nexora está construido con Three.js en `src/nexora-core.js`, con sus estilos en `src/nexora-core.css`. Sus ocho piezas se separan con **Explorar núcleo** y se ensamblan durante el recorrido del método. Incluye pausa, respuesta al cursor y controles táctiles. La animación se suspende fuera de pantalla, respeta el movimiento reducido y usa `assets/nexora-core.svg` cuando WebGL no está disponible. Con el servidor local encendido, `npm run test:core` comprueba estos comportamientos.
+
 ## Publicar Nexora en Vercel
 
 Importa el repositorio `David0414/Nexora` y selecciona la raíz del repositorio en **Root Directory** (dejar vacío; la interfaz puede mostrar `./`). No selecciones `portfolio-main/portfolio-main`.

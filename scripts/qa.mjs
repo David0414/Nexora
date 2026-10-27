@@ -18,7 +18,15 @@ assert.equal(await page.locator('#hero-scene').count(), 1);
 assert.equal(await page.locator('.tech-section').count(), 0);
 assert.equal(await page.locator('#method-scene').count(), 1);
 await page.waitForTimeout(1400);
-assert.equal(await page.locator('.hero-stage').getAttribute('data-models'), '2');
+assert.deepEqual(errors, []);
+assert.equal(await page.locator('.hero-stage').getAttribute('data-core-state'), 'ready');
+assert.equal(await page.locator('.method-visual').getAttribute('data-core-state'), 'ready');
+await page.getByRole('button', { name: 'Explorar núcleo' }).click();
+assert.equal(await page.getByRole('button', { name: 'Unir piezas' }).getAttribute('aria-pressed'), 'true');
+await page.getByRole('button', { name: 'Unir piezas' }).click();
+await page.getByRole('button', { name: 'Pausar', exact: true }).click();
+assert.equal(await page.getByRole('button', { name: 'Reanudar' }).getAttribute('aria-pressed'), 'true');
+await page.getByRole('button', { name: 'Reanudar' }).click();
 assert.equal(await page.locator('video').count(), 3);
 await page.screenshot({ path: 'artifacts/nexora-desktop.png', fullPage: false });
 

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" fill="none">
+  <defs>
+    <radialGradient id="glow"><stop stop-color="#c9ff45" stop-opacity=".2"/><stop offset="1" stop-color="#c9ff45" stop-opacity="0"/></radialGradient>
+    <linearGradient id="metal" x2="1" y2="1"><stop stop-color="#c0d0c7"/><stop offset=".5" stop-color="#354542"/><stop offset="1" stop-color="#8eaaa0"/></linearGradient>
+  </defs>
+  <circle cx="300" cy="300" r="240" fill="url(#glow)"/>
+  <g transform="translate(300 300) rotate(-23) scale(.92 1)">
+    <ellipse rx="225" ry="155" stroke="#9dbdb1" stroke-width="1.5" transform="rotate(40)"/>
+    <ellipse rx="245" ry="140" stroke="#526b60" transform="rotate(-38)"/>
+    <circle r="149" stroke="url(#metal)" stroke-width="44" stroke-dasharray="104 13"/>
+    <circle r="121" stroke="#c9ff45" stroke-width="4" stroke-dasharray="83 12"/>
+    <circle r="94" stroke="#748d83" stroke-width="9"/>
+    <circle r="78" fill="#1d2f20" stroke="#c9ff45" stroke-width="2"/>
+    <path d="M0-70 60-35 60 35 0 70-60 35-60-35Z M0-70V70 M-60-35 60 35 M-60 35 60-35" stroke="#a7dd4c" opacity=".45"/>
+    <circle r="40" fill="#101916" stroke="#849d75"/>
+    <path d="M-17-10V14M0-24V24M17-7V7" stroke="#d9ff8a" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="-180" cy="-112" r="5" fill="#d9ff8a"/>
+  </g>
+</svg>

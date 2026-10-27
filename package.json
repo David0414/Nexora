@@ -7,8 +7,9 @@
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node --check src/nexora-new.js && node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
+    "check": "node --check src/nexora-new.js && node --check src/nexora-core.js && node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
     "test": "node scripts/qa.mjs",
+    "test:core": "node scripts/qa-core.mjs",
     "test:motion": "node scripts/qa.mjs",
     "test:premium": "node scripts/qa.mjs"
   },
