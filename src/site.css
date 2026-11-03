@@ -218,6 +218,20 @@ main,.site-footer,section{position:relative}
 .has-motion .method-step p{max-height:0;overflow:hidden;opacity:0;margin-top:0;transition:max-height .6s var(--ease-out),opacity .5s,margin .5s}
 .has-motion .method-step.is-active p{max-height:90px;opacity:1;margin-top:6px}
 
+/* ---------- Developer ---------- */
+.about{max-width:var(--max);margin:0 auto;padding:var(--gap-section) var(--gutter) 0;display:grid;grid-template-columns:1fr 1.1fr;align-items:center;gap:clamp(40px,7vw,112px)}
+.about-portrait{width:min(100%,500px);aspect-ratio:1;justify-self:center}
+.about-stage{position:relative;width:100%;height:100%}
+.about-field{position:absolute;inset:12% 3% 1% 13%;border-radius:50%;background:var(--lime)}
+.about-photo{position:absolute;inset:7% 12% 12% 7%;overflow:hidden;border-radius:50%;background:var(--surface)}
+.about-photo img{display:block;width:100%;height:100%;object-fit:cover}
+.about-orbit{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.about-orbit-arc{fill:none;stroke:var(--lime);stroke-width:3;stroke-linecap:round;stroke-dasharray:32 68}
+.about-orbit-dot{fill:var(--lime)}
+.about-copy{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
+.about-title{font-weight:800;font-size:clamp(2.5rem,5vw,4.75rem);line-height:1;letter-spacing:-.04em}
+.about-text{font-size:clamp(1.0625rem,1.3vw,1.25rem);line-height:1.45;max-width:50ch}
+
 /* ---------- Contact ---------- */
 .contact{max-width:var(--max);margin:0 auto;padding:var(--gap-section) var(--gutter)}
 .contact-title{font-weight:800;font-size:clamp(2.25rem,5.4vw,5rem);line-height:1;letter-spacing:-.04em;margin-bottom:clamp(40px,6vw,80px)}
@@ -285,6 +299,8 @@ main,.site-footer,section{position:relative}
   .has-motion .method-step p{max-height:none;opacity:1;margin-top:6px}
   .method-step,.method-step.is-active{padding:14px 0;background:none}
   .method-step h3{color:var(--text)}
+  .about{grid-template-columns:1fr}
+  .about-portrait{width:min(78vw,380px)}
   .contact-grid,.contact-form{grid-template-columns:1fr}
   .send-button{width:96px;height:96px}
   .footer-top{flex-wrap:wrap}
@@ -295,7 +311,7 @@ main,.site-footer,section{position:relative}
   .hero-title{font-size:clamp(3rem,14.5vw,5rem)}
 }
 @media (max-width:480px){
-  .hero-actions .button{width:100%;justify-content:space-between}
+  .hero-actions .button,.about-action{width:100%;justify-content:space-between}
   .footer-bottom{flex-direction:column}
 }
 @media (prefers-reduced-motion:reduce){

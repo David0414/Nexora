@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initServices();
   initWork();
   initMethod();
+  initAbout();
   initFooter();
   initChoreography();
   ScrollTrigger.create({ start: 0, end: 'max', onUpdate: self => setProgress(self.progress) });
@@ -156,7 +157,7 @@ function initChoreography() {
     morph(scenes.servicesEnd, scenes.work, { trigger: '.work', start: 'top bottom', end: 'top 30%' });
     morph(scenes.work, scenes.method, { trigger: '.method', start: 'top bottom', end: 'top top' });
     morph(scenes.method, scenes.methodEnd, { trigger: '.method', start: 'top top', end: '+=260%' });
-    morph(scenes.methodEnd, scenes.contact, { trigger: '.contact', start: 'top bottom', end: 'top 45%' });
+    morph(scenes.methodEnd, scenes.contact, { trigger: '.about', start: 'top bottom', end: 'top 45%' });
     morph(scenes.contact, scenes.footer, { trigger: '.site-footer', start: 'top bottom', end: 'bottom bottom' });
   });
   mm.add(MOBILE, () => {
@@ -315,6 +316,39 @@ function initMethod() {
       onUpdate: self => activate(Math.min(steps.length - 1, Math.floor(self.progress * steps.length * .999)))
     });
   });
+}
+
+/* ---------------------------------------------------------------- developer */
+function initAbout() {
+  const portrait = $('.about-portrait');
+  if (!portrait) return;
+  const stage = $('.about-stage', portrait);
+
+  gsap.fromTo(portrait, { opacity: 0, y: 60, scale: .92 }, {
+    opacity: 1, y: 0, scale: 1, duration: 1.4, ease: 'expo.out', clearProps: 'transform,opacity',
+    scrollTrigger: { trigger: portrait, start: 'top 85%', once: true }
+  });
+  gsap.fromTo('.about-tags li, .about-action', { opacity: 0, y: 20 }, {
+    opacity: 1, y: 0, duration: .9, stagger: .06, ease: 'expo.out', clearProps: 'opacity',
+    scrollTrigger: { trigger: '.about-tags', start: 'top 90%', once: true }
+  });
+
+  // One scroll-linked move: the disc drifts, the orbit turns and the photo settles.
+  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.about', start: 'top bottom', end: 'bottom top', scrub: true } })
+    .fromTo('.about-field', { x: -26, y: 44 }, { x: 18, y: -30 }, 0)
+    .fromTo('.about-photo img', { scale: 1.16 }, { scale: 1 }, 0)
+    .fromTo('.about-orbit', { rotation: -40 }, { rotation: 200, transformOrigin: '50% 50%' }, 0);
+
+  if (!finePointer) return;
+  gsap.set(stage, { transformPerspective: 900 });
+  const tiltX = gsap.quickTo(stage, 'rotationX', { duration: .8, ease: 'power3' });
+  const tiltY = gsap.quickTo(stage, 'rotationY', { duration: .8, ease: 'power3' });
+  portrait.addEventListener('pointermove', event => {
+    const rect = portrait.getBoundingClientRect();
+    tiltY(((event.clientX - rect.left) / rect.width - .5) * 14);
+    tiltX(((event.clientY - rect.top) / rect.height - .5) * -14);
+  });
+  portrait.addEventListener('pointerleave', () => { tiltX(0); tiltY(0); });
 }
 
 /* ---------------------------------------------------------------- footer */
