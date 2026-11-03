@@ -4,7 +4,7 @@ Sitio de Nexora, consultoría de software, plataformas, automatización industri
 
 La página principal está en `index.html` y usa `src/site.css`, `src/site.js` y `src/experience.js`.
 
-- `src/experience.js`: escena Three.js fija detrás de la página. Contiene el núcleo de ocho piezas con reflejos de entorno, bloom (solo en escritorio) y un campo de partículas. Expone un objeto `state` (posición, escala, apertura, giro y brillo) que la página anima.
+- `src/experience.js`: escena Three.js fija detrás de la página. Contiene el núcleo de ocho piezas con reflejos de entorno, bloom (solo en escritorio) y un campo de partículas. Expone un objeto `state` (posición, escala, apertura, giro y brillo) que la página anima. La calidad se adapta sola: mide el tiempo de cada cuadro y baja o sube la resolución (`QUALITY`), y con el núcleo fuera de pantalla casi no dibuja.
 - `src/site.js`: coreografía con GSAP. Usa ScrollSmoother (scroll suave en escritorio), SplitText (titulares) y ScrollTrigger. El núcleo cambia de pose entre secciones (`SCENES`, con variantes de escritorio y celular). Servicios se desplaza en horizontal, los proyectos se apilan y el método fija la sección mientras el núcleo se ensambla. También maneja el cursor, los botones magnéticos y el formulario, que abre el correo con el mensaje ya escrito.
 - Accesibilidad: respeta `prefers-reduced-motion` (sin intro, scroll nativo, escena estática) e incluye el botón **Pausar movimiento**. Cuando WebGL no está disponible usa `assets/nexora-core.svg`.
 

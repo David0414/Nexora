@@ -2,6 +2,8 @@ import { createExperience } from './experience.js';
 
 const { gsap, ScrollTrigger, ScrollSmoother, SplitText } = window;
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
+// The phone address bar resizing the viewport must not recalculate every trigger.
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -67,7 +69,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (finePointer) {
-    smoother = ScrollSmoother.create({ wrapper: '#smooth-wrapper', content: '#smooth-content', smooth: 1.15, effects: false, smoothTouch: false });
+    smoother = ScrollSmoother.create({ wrapper: '#smooth-wrapper', content: '#smooth-content', smooth: .9, effects: false, smoothTouch: false });
   }
 
   await Promise.race([document.fonts?.ready, new Promise(resolve => setTimeout(resolve, 1500))]);
@@ -196,28 +198,30 @@ function initManifesto() {
 }
 
 /* ---------------------------------------------------------------- marquee */
+let marqueeOnScreen = false;
+
+function syncLoops() {
+  const paused = !marqueeOnScreen || root.classList.contains('motion-paused');
+  loops.forEach(loop => loop.paused(paused));
+}
+
 function initMarquee() {
   $$('[data-marquee]').forEach(row => {
     const track = $('.marquee-track', row);
     const clone = track.cloneNode(true);
     clone.setAttribute('aria-hidden', 'true');
     row.append(clone);
-    const direction = Number(row.dataset.marquee);
-    const tracks = [track, clone];
-    const loop = direction > 0
-      ? gsap.to(tracks, { xPercent: -100, duration: 32, ease: 'none', repeat: -1 })
-      : gsap.fromTo(tracks, { xPercent: -100 }, { xPercent: 0, duration: 38, ease: 'none', repeat: -1 });
-    loops.push(loop);
+    loops.push(gsap.to([track, clone], { xPercent: -100, duration: 32, ease: 'none', repeat: -1, paused: true }));
   });
-  const skew = gsap.quickTo('.marquee-track', 'skewX', { duration: .5, ease: 'power3' });
+  const speed = { value: 1 };
+  const applySpeed = () => loops.forEach(loop => loop.timeScale(speed.value));
   ScrollTrigger.create({
     trigger: '.marquee', start: 'top bottom', end: 'bottom top',
+    onToggle: self => { marqueeOnScreen = self.isActive; syncLoops(); },
     onUpdate: self => {
       const velocity = self.getVelocity();
-      const boost = 1 + Math.min(Math.abs(velocity) / 500, 5);
-      loops.forEach(loop => gsap.to(loop, { timeScale: boost * (velocity < 0 ? -1 : 1), duration: .2, overwrite: true, onComplete: () => gsap.to(loop, { timeScale: 1, duration: 1.2 }) }));
-      skew(gsap.utils.clamp(-8, 8, velocity / -300));
-      gsap.delayedCall(.15, () => skew(0));
+      const target = (1 + Math.min(Math.abs(velocity) / 500, 5)) * (velocity < 0 ? -1 : 1);
+      gsap.to(speed, { value: target, duration: .2, overwrite: true, onUpdate: applySpeed, onComplete: () => gsap.to(speed, { value: 1, duration: 1.2, onUpdate: applySpeed }) });
     }
   });
 }
@@ -264,15 +268,26 @@ function initWork() {
     const offset = () => $('[data-header]').offsetHeight + 24;
     const last = cards[cards.length - 1];
     cards.forEach((card, index) => {
-      gsap.from(card.querySelector('.project-media'), {
-        clipPath: 'inset(18% 12% 18% 12% round 32px)', duration: 1.6, ease: 'expo.out',
+      gsap.fromTo(card.querySelector('.iphone, .laptop'), { y: 48, opacity: 0 }, {
+        y: 0, opacity: 1, duration: 1.4, ease: 'expo.out', clearProps: 'transform,opacity',
         scrollTrigger: { trigger: card, start: 'top 85%', once: true }
       });
       if (card === last) return;
       ScrollTrigger.create({ trigger: card, start: () => `top top+=${offset()}`, endTrigger: last, end: () => `top top+=${offset()}`, pin: true, pinSpacing: false });
-      gsap.to(card.querySelector('.project-inner'), {
-        scale: .9 + index * .015, '--dim': .65, ease: 'none',
-        scrollTrigger: { trigger: cards[index + 1], start: 'top bottom', end: () => `top top+=${offset()}`, scrub: true }
+      const inner = card.querySelector('.project-inner');
+      const dim = document.createElement('i');
+      dim.className = 'project-dim';
+      inner.append(dim);
+      const next = cards[index + 1];
+      gsap.timeline({ scrollTrigger: { trigger: next, start: 'top bottom', end: () => `top top+=${offset()}`, scrub: true } })
+        .to(inner, { scale: .9 + index * .015, ease: 'none' }, 0)
+        .to(dim, { opacity: .65, ease: 'none' }, 0);
+      // A card buried under the next one stops decoding its video.
+      const video = card.querySelector('video');
+      if (video) ScrollTrigger.create({
+        trigger: next, start: () => `top top+=${offset()}`, end: 'max',
+        onEnter: () => { video.dataset.covered = '1'; syncVideo(video); },
+        onLeaveBack: () => { video.dataset.covered = '0'; syncVideo(video); }
       });
     });
   });
@@ -429,8 +444,8 @@ function initMotionToggle() {
     label.textContent = paused ? 'Reanudar movimiento' : 'Pausar movimiento';
     root.classList.toggle('motion-paused', paused);
     experience?.setPaused(paused);
-    loops.forEach(loop => loop.paused(paused));
-    $$('video[data-lazy-video]').forEach(video => { if (paused) video.pause(); else if (video.dataset.inView === '1') video.play().catch(() => {}); });
+    syncLoops();
+    $$('video[data-lazy-video]').forEach(syncVideo);
     try { localStorage.setItem('nexora-motion-paused', paused ? '1' : '0'); } catch {}
   };
   let stored = false;
@@ -443,19 +458,26 @@ function initMotionToggle() {
 }
 
 /* ---------------------------------------------------------------- media */
+function syncVideo(video) {
+  const shouldPlay = video.dataset.inView === '1' && video.dataset.covered !== '1'
+    && !reducedMotion && !root.classList.contains('motion-paused');
+  if (shouldPlay) video.play().catch(() => {});
+  else video.pause();
+}
+
 function initVideos() {
   const videos = $$('video[data-lazy-video]');
   if (!('IntersectionObserver' in window)) return;
   const observer = new IntersectionObserver(entries => entries.forEach(entry => {
     const video = entry.target;
     video.dataset.inView = entry.isIntersecting ? '1' : '0';
-    if (entry.isIntersecting) {
-      const source = $('source[data-src]', video);
-      if (source) { source.src = source.dataset.src; source.removeAttribute('data-src'); video.load(); }
-      if (!reducedMotion && !root.classList.contains('motion-paused')) video.play().catch(() => {});
-    } else {
-      video.pause();
+    const source = $('source[data-src]', video);
+    if (entry.isIntersecting && source) {
+      source.src = source.dataset.src;
+      source.removeAttribute('data-src');
+      video.load();
     }
+    syncVideo(video);
   }), { rootMargin: '200px 0px' });
   videos.forEach(video => observer.observe(video));
 }

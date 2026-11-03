@@ -22,7 +22,8 @@ const files = [
     'postprocessing/OutputPass.js',
     'shaders/CopyShader.js',
     'shaders/LuminosityHighPassShader.js',
-    'shaders/OutputShader.js'
+    'shaders/OutputShader.js',
+    'utils/BufferGeometryUtils.js'
   ].map(path => [`${jsm}/${path}`, `jsm/${path}`])
 ];
 for (const [source, target] of files) {

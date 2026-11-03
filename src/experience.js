@@ -4,16 +4,38 @@ import { EffectComposer } from '../assets/vendor/jsm/postprocessing/EffectCompos
 import { RenderPass } from '../assets/vendor/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from '../assets/vendor/jsm/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from '../assets/vendor/jsm/postprocessing/OutputPass.js';
+import { mergeGeometries } from '../assets/vendor/jsm/utils/BufferGeometryUtils.js';
 
 const TAU = Math.PI * 2;
 const { clamp, lerp, damp } = THREE.MathUtils;
 const BACKGROUND = 0x07090a;
+// Share of the device's pixel ratio each quality level renders at. The last level also drops bloom.
+const QUALITY = [1, .85, .72, .6];
+const MIN_PIXEL_RATIO = .7;
+const CORE_RADIUS = 1.75;
 
 function mesh(parent, geometry, material, x = 0, y = 0, z = 0) {
   const object = new THREE.Mesh(geometry, material);
   object.position.set(x, y, z);
   parent.add(object);
   return object;
+}
+
+/** Merges a group's static meshes by material: the same picture for far fewer draw calls. */
+function bake(group) {
+  const parts = new Map();
+  for (const child of [...group.children]) {
+    if (!child.isMesh) continue;
+    child.updateMatrix();
+    const geometry = (child.geometry.index ? child.geometry.toNonIndexed() : child.geometry.clone()).applyMatrix4(child.matrix);
+    if (!parts.has(child.material)) parts.set(child.material, []);
+    parts.get(child.material).push(geometry);
+    group.remove(child);
+  }
+  for (const [material, geometries] of parts) {
+    group.add(new THREE.Mesh(mergeGeometries(geometries), material));
+    geometries.forEach(geometry => geometry.dispose());
+  }
 }
 
 function arcGeometry(inner, outer, angle, depth) {
@@ -77,6 +99,7 @@ function createCore() {
     for (let vent = 0; vent < 4; vent++) {
       mesh(segment, ventGeometry, index % 2 ? graphite : metal, 1.04, (vent - 1.5) * .045, .18).rotation.z = -.25;
     }
+    bake(segment);
     segments.push({ segment, angle, twist: (index % 2 ? 1 : -1) * (.4 + (index % 3) * .18) });
   }
 
@@ -111,6 +134,9 @@ function createCore() {
     const angle = index * TAU / 36;
     mesh(rear, toothGeometry, metal, Math.cos(angle), Math.sin(angle)).rotation.z = angle;
   }
+
+  bake(badge);
+  bake(rear);
 
   const orbit = new THREE.Group();
   orbit.rotation.set(.72, -.38, .15);
@@ -197,13 +223,14 @@ function createParticles(count) {
  * `state` is plain data the scroll timeline tweens; the render loop eases toward it.
  */
 export function createExperience(canvas, { reducedMotion = false } = {}) {
+  const mobile = window.matchMedia('(max-width: 820px)');
   let renderer;
   try {
-    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+    // Bloom renders to its own target, so context antialiasing would only cost memory on desktop.
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: mobile.matches, powerPreference: 'high-performance' });
   } catch {
     return null;
   }
-  const mobile = window.matchMedia('(max-width: 820px)');
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
@@ -233,12 +260,15 @@ export function createExperience(canvas, { reducedMotion = false } = {}) {
   const particles = createParticles(mobile.matches ? 520 : 1100);
   scene.add(particles);
 
-  const useBloom = !mobile.matches;
   let composer = null;
-  if (useBloom) {
+  if (!mobile.matches) {
     composer = new EffectComposer(renderer);
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(1, 1), .22, .35, 1.25));
+    const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), .22, .35, 1.25);
+    // Bloom is a soft blur: half resolution looks the same at a quarter of the pixels.
+    const sizeBloom = bloom.setSize.bind(bloom);
+    bloom.setSize = (width, height) => sizeBloom(Math.ceil(width / 2), Math.ceil(height / 2));
+    composer.addPass(bloom);
     composer.addPass(new OutputPass());
   }
 
@@ -249,19 +279,69 @@ export function createExperience(canvas, { reducedMotion = false } = {}) {
   const stateKeys = Object.keys(state);
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   let velocity = 0, elapsed = 0, previous = 0, frame = 0, paused = false, running = true, lastSignature = '';
+  let width = 0, height = 0, idleFrames = 0;
 
-  const resize = () => {
-    const width = window.innerWidth, height = window.innerHeight;
-    const ratio = Math.min(window.devicePixelRatio || 1, mobile.matches ? 1.5 : 1.75);
+  // Adaptive quality: start from what the hardware suggests, then follow measured frame times.
+  const modestDevice = navigator.hardwareConcurrency <= 4 || navigator.deviceMemory <= 4;
+  let level = modestDevice ? 1 : 0, bestLevel = 0;
+  let sampleTime = 0, sampleCount = 0, skipSamples = 20, fastWindows = 0, raised = false;
+
+  const applySize = () => {
+    const ratio = Math.max(Math.min(window.devicePixelRatio || 1, mobile.matches ? 1.5 : 1.75) * QUALITY[level], MIN_PIXEL_RATIO);
     renderer.setPixelRatio(ratio);
     renderer.setSize(width, height, false);
     composer?.setPixelRatio(ratio);
     composer?.setSize(width, height);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    canvas.dataset.quality = level;
   };
 
-  const render = delta => {
+  const resize = () => {
+    // The canvas is 100lvh, so a phone's address bar sliding away changes nothing here.
+    const nextWidth = canvas.clientWidth, nextHeight = canvas.clientHeight;
+    if (nextWidth === width && nextHeight === height) return false;
+    width = nextWidth;
+    height = nextHeight;
+    applySize();
+    return true;
+  };
+
+  const setLevel = next => {
+    level = next;
+    applySize();
+    sampleTime = sampleCount = fastWindows = 0;
+    skipSamples = 12;
+  };
+
+  const watchFrame = milliseconds => {
+    if (milliseconds > 400) return;
+    if (skipSamples > 0) { skipSamples--; return; }
+    sampleTime += milliseconds;
+    sampleCount++;
+    if (sampleCount < 45 && (sampleTime < 1200 || sampleCount < 5)) return;
+    const average = sampleTime / sampleCount;
+    sampleTime = sampleCount = 0;
+    // Pinned at 30 fps means a 30 Hz screen or battery saver, which fewer pixels cannot speed up.
+    if (Math.abs(average - 1000 / 30) < 1.5) return;
+    if (average > 21 && level < QUALITY.length - 1) {
+      if (raised) bestLevel = level + 1;
+      raised = false;
+      setLevel(level + 1);
+    } else if (average < 17.5 && level > bestLevel && ++fastWindows >= 8) {
+      raised = true;
+      setLevel(level - 1);
+    }
+  };
+
+  const coreOnScreen = () => {
+    const halfHeight = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
+    const halfWidth = halfHeight * camera.aspect;
+    const radius = CORE_RADIUS * view.scale;
+    return Math.abs(core.root.position.x) - radius < halfWidth && Math.abs(core.root.position.y) - radius < halfHeight;
+  };
+
+  const update = delta => {
     const still = reducedMotion || paused;
     const smoothing = still ? 1 : 1 - Math.exp(-delta * 4.5);
     if (!still) elapsed += delta;
@@ -278,7 +358,10 @@ export function createExperience(canvas, { reducedMotion = false } = {}) {
     const fit = portrait ? clamp(camera.aspect * 1.5, .6, 1) : 1;
     core.root.position.set(view.x * halfWidth, view.y * halfHeight, 0);
     core.root.scale.setScalar(view.scale * fit);
-    core.update(elapsed, { ...view, spin: view.spin + velocity * .4 }, pointer, still);
+    const spin = view.spin;
+    view.spin = spin + velocity * .4;
+    core.update(elapsed, view, pointer, still);
+    view.spin = spin;
 
     camera.position.x = pointer.x * .25;
     camera.position.y = -pointer.y * .18;
@@ -286,18 +369,30 @@ export function createExperience(canvas, { reducedMotion = false } = {}) {
     particles.rotation.y = elapsed * .012 + view.spin * .1;
     particles.position.y = -view.spin * .25;
     accent.intensity = 14 * view.glow;
+  };
 
-    if (composer) composer.render(); else renderer.render(scene, camera);
+  const draw = () => {
+    if (composer && level < QUALITY.length - 1) composer.render();
+    else renderer.render(scene, camera);
+  };
+
+  const render = delta => {
+    update(delta);
+    draw();
   };
 
   const tick = now => {
     frame = 0;
     if (!running) return;
-    const delta = previous ? Math.min((now - previous) / 1000, .05) : 1 / 60;
-    // Phones render at ~30 fps to protect battery and heat.
-    if (!previous || !mobile.matches || delta >= 1 / 32) {
-      previous = now;
-      render(delta);
+    const milliseconds = previous ? now - previous : 1000 / 60;
+    previous = now;
+    update(Math.min(milliseconds / 1000, .05));
+    if (coreOnScreen()) {
+      draw();
+      watchFrame(milliseconds);
+    } else if (++idleFrames % 6 === 0) {
+      // Only the slow particle field is showing, so a few frames a second are enough.
+      draw();
     }
     if (!reducedMotion && !paused) frame = requestAnimationFrame(tick);
   };
@@ -310,7 +405,7 @@ export function createExperience(canvas, { reducedMotion = false } = {}) {
     }
   };
 
-  window.addEventListener('resize', () => { resize(); render(0); }, { passive: true });
+  window.addEventListener('resize', () => { if (resize()) render(0); }, { passive: true });
   window.addEventListener('pointermove', event => {
     if (event.pointerType === 'touch') return;
     pointer.tx = event.clientX / window.innerWidth * 2 - 1;
