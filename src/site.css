@@ -181,8 +181,18 @@ main,.site-footer,section{position:relative}
 .project-media img{width:100%;height:100%;object-fit:cover;object-position:top left;transition:transform 1.2s var(--ease-out)}
 .project-media:hover img{transform:scale(1.03)}
 .project-media-phone{display:grid;place-items:center;padding:clamp(20px,3vw,40px);background:var(--lime)}
-.project-media-phone video{width:auto;height:100%;max-height:600px;aspect-ratio:9/19;object-fit:cover;border-radius:28px;background:var(--on-lime);transition:transform 1.2s var(--ease-out)}
-.project-media-phone:hover video{transform:translateY(-6px)}
+.project-media-phone:hover .iphone{transform:translateY(-6px)}
+
+/* Device frame: every length is in em, so setting --iphone-w scales the whole phone. */
+.iphone{--iphone-w:min(248px,calc((74vh - 80px) / 2.26));position:relative;display:block;width:var(--iphone-w);font-size:calc(var(--iphone-w) / 100);padding:3em;border:.9em solid #565c5e;border-radius:15.5em;background:#0c0e0f;transition:transform 1.2s var(--ease-out)}
+.iphone-screen{display:block;overflow:hidden;aspect-ratio:480/1066;border-radius:12em;background:#000}
+.iphone video{display:block;width:100%;height:100%;object-fit:cover}
+.iphone-island{position:absolute;left:50%;top:5.2em;width:29em;height:8.6em;border-radius:5em;background:#000;transform:translateX(-50%)}
+.iphone-key{position:absolute;width:1.1em;border-radius:.6em;background:#565c5e}
+.iphone-key-action{left:-2em;top:30em;height:7em}
+.iphone-key-up{left:-2em;top:43em;height:13em}
+.iphone-key-down{left:-2em;top:59em;height:13em}
+.iphone-key-side{right:-2em;top:48em;height:21em}
 .project-info{display:flex;flex-direction:column;justify-content:flex-end;gap:16px;padding:clamp(24px,3.4vw,48px)}
 .project-info h3{font-weight:800;font-size:clamp(2.2rem,3.6vw,3.5rem);letter-spacing:-.04em;line-height:1}
 .project-phone .project-info h3{font-size:clamp(2.5rem,5.6vw,5.5rem)}
@@ -260,7 +270,8 @@ main,.site-footer,section{position:relative}
   .project-inner,.project-phone .project-inner{grid-template-columns:1fr;min-height:0}
   .project-phone:nth-child(odd) .project-media{order:0}
   .project-media{aspect-ratio:4/3;min-height:0}
-  .project-media-phone{aspect-ratio:auto;height:480px}
+  .project-media-phone{aspect-ratio:auto;padding:36px 20px}
+  .iphone{--iphone-w:min(62vw,250px)}
   .method-pin{grid-template-columns:1fr;min-height:0;padding-top:min(62svh,560px)}
   .method-content{grid-column:1}
   .method-content .section-title{font-size:clamp(1.75rem,8vw,3.75rem)}
@@ -285,6 +296,6 @@ main,.site-footer,section{position:relative}
   /* Keep state feedback; drop only what travels or loops. */
   .webgl{position:absolute;height:100svh}
   .motion-toggle-bars i{animation:none}
-  .button>.icon,.send-button .icon,.project-media img,.project-media-phone video{transition:none}
-  .button:hover>.icon,.send-button:hover .icon,.project-media:hover img,.project-media-phone:hover video{transform:none}
+  .button>.icon,.send-button .icon,.project-media img,.iphone{transition:none}
+  .button:hover>.icon,.send-button:hover .icon,.project-media:hover img,.project-media-phone:hover .iphone{transform:none}
 }

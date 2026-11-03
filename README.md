@@ -2,7 +2,7 @@
 
 Sitio de Nexora, consultoría de software, plataformas, automatización industrial y hardware.
 
-La página principal está en `index.html` y usa `src/site.css`, `src/site.js` y `src/experience.js`. La carpeta `portfolio-main/portfolio-main` contiene un proyecto distinto: el portafolio personal de David.
+La página principal está en `index.html` y usa `src/site.css`, `src/site.js` y `src/experience.js`.
 
 - `src/experience.js`: escena Three.js fija detrás de la página. Contiene el núcleo de ocho piezas con reflejos de entorno, bloom (solo en escritorio) y un campo de partículas. Expone un objeto `state` (posición, escala, apertura, giro y brillo) que la página anima.
 - `src/site.js`: coreografía con GSAP. Usa ScrollSmoother (scroll suave en escritorio), SplitText (titulares) y ScrollTrigger. El núcleo cambia de pose entre secciones (`SCENES`, con variantes de escritorio y celular). Servicios se desplaza en horizontal, los proyectos se apilan y el método fija la sección mientras el núcleo se ensambla. También maneja el cursor, los botones magnéticos y el formulario, que abre el correo con el mensaje ya escrito.
@@ -12,7 +12,7 @@ La página principal está en `index.html` y usa `src/site.css`, `src/site.js` y
 
 ## Publicar Nexora en Vercel
 
-Importa el repositorio `David0414/Nexora` y selecciona la raíz del repositorio en **Root Directory** (dejar vacío; la interfaz puede mostrar `./`). No selecciones `portfolio-main/portfolio-main`.
+Importa el repositorio `David0414/Nexora` y selecciona la raíz del repositorio en **Root Directory** (dejar vacío; la interfaz puede mostrar `./`).
 
 El archivo `vercel.json` configura:
 
@@ -21,7 +21,6 @@ El archivo `vercel.json` configura:
 - **Build Command:** `npm run build`.
 - **Output Directory:** `dist`.
 
-Si un despliegue existente muestra el portafolio de David, cambia **Settings → Build and Deployment → Root Directory** a la raíz del repositorio, guarda y vuelve a desplegar la rama `main`. Vercel lee `vercel.json` desde la carpeta elegida, así que este ajuste también debe ser correcto en el panel.
 
 ## Abrir localmente
 
