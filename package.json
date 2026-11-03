@@ -7,7 +7,7 @@
     "dev": "node scripts/serve.mjs",
     "start": "node scripts/serve.mjs",
     "build": "node scripts/build.mjs",
-    "check": "node --check src/nexora-new.js && node --check src/nexora-core.js && node --check src/main.js && node --check src/motion.js && node --check src/scene.js && node --check src/premium.js",
+    "check": "node --check src/site.js && node --check src/experience.js",
     "test": "node scripts/qa.mjs",
     "test:core": "node scripts/qa-core.mjs",
     "test:motion": "node scripts/qa.mjs",
@@ -21,5 +21,3 @@
     "three": "^0.186.1"
   }
 }
-
-

@@ -2,9 +2,13 @@
 
 Sitio de Nexora, consultoría de software, plataformas, automatización industrial y hardware.
 
-La página principal está en `index.html` y usa `src/nexora-new.css` y `src/nexora-new.js`. La carpeta `portfolio-main/portfolio-main` contiene un proyecto distinto: el portafolio personal de David.
+La página principal está en `index.html` y usa `src/site.css`, `src/site.js` y `src/experience.js`. La carpeta `portfolio-main/portfolio-main` contiene un proyecto distinto: el portafolio personal de David.
 
-El núcleo 3D de Nexora está construido con Three.js en `src/nexora-core.js`, con sus estilos en `src/nexora-core.css`. Sus ocho piezas se separan con **Explorar núcleo** y se ensamblan durante el recorrido del método. Incluye pausa, respuesta al cursor y controles táctiles. La animación se suspende fuera de pantalla, respeta el movimiento reducido y usa `assets/nexora-core.svg` cuando WebGL no está disponible. Con el servidor local encendido, `npm run test:core` comprueba estos comportamientos.
+- `src/experience.js`: escena Three.js fija detrás de la página. Contiene el núcleo de ocho piezas con reflejos de entorno, bloom (solo en escritorio) y un campo de partículas. Expone un objeto `state` (posición, escala, apertura, giro y brillo) que la página anima.
+- `src/site.js`: coreografía con GSAP. Usa ScrollSmoother (scroll suave en escritorio), SplitText (titulares) y ScrollTrigger. El núcleo cambia de pose entre secciones (`SCENES`, con variantes de escritorio y celular). Servicios se desplaza en horizontal, los proyectos se apilan y el método fija la sección mientras el núcleo se ensambla. También maneja el cursor, los botones magnéticos y el formulario, que abre el correo con el mensaje ya escrito.
+- Accesibilidad: respeta `prefers-reduced-motion` (sin intro, scroll nativo, escena estática) e incluye el botón **Pausar movimiento**. Cuando WebGL no está disponible usa `assets/nexora-core.svg`.
+
+`scripts/vendor.mjs` copia GSAP y los complementos de Three.js desde `node_modules` a `assets/vendor/` y se ejecuta en cada `npm run build`. Los archivos `src/nexora-*.js|css`, `main.js`, `premium.*`, `motion.*` y `scene.js` pertenecen a versiones anteriores y la página ya no los carga. Lo mismo pasa con `scripts/qa-*.mjs`.
 
 ## Publicar Nexora en Vercel
 
